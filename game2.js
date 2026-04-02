@@ -17,7 +17,9 @@ var blue = 255;
 
 ctx.fillStyle = "#d0e0f0"; // Цвет фона
 ctx.fillRect(0, 0, 1200, 600);
- 
+
+ctx.font = "16px comic";
+ctx.strokeText("Hello!", 580, 100);
 
 document.addEventListener("mouseup", function (e) {
     
