@@ -21,10 +21,9 @@ var red = 220;
 var green = 220;
 var blue = 255;
 
-var komplekt = 19;
-
-ctx.fillStyle = "#d0e0f0"; // Цвет фона
-
+var komplekt = 16;
+var result16 = -1;
+var result19 = 0;
 
 window.addEventListener("resize", () => {
   cvs.width = window.innerWidth;
@@ -55,32 +54,41 @@ document.addEventListener("keydown", function (e) {
 document.addEventListener("keyup", function (e) {
   
   boxKey = event.key;
-
   deltaBox=8;
-
 });
 
-let ctext = ["GRM155C81C225KE11D", "TRS3122ERGET", "М2,5x12-А2-70"];
-let cright = ["1", "1", "1"];
-let cexist = [1, 1, 1];
-let cx = [100, 300, 500];
-let cy = [150, 50, 250];
-var N = 3;
-var exist = N;
+let dictionary = ["1 RT0402FRD0751RL", "2 NFE31PT222Z1E9", "3 NFM18CC222R1C3", "4 М2,5-6gx8.36.10.013", "5 RT0402FRE0722RL",
+  "6 2,5-200 HV-A2", "7 М2,5х16-А2-70", "8 T491D107K020AT", "9 7.860.001-05", "10 T491X226K050AT", "11 GRM155C81C225KE11D", "12 GRM155C80J475MEAAJ", 
+   "13 М2,5x12-А2-70", "14 GRM31BR73A472KW01L", "15 GRM033R61A104ME84D", "16 RC0603FR-074K7L", "17 GRM1555C1H220JA01J"];
+var maxND = 17;
+var ND = maxND - Math.floor(Math.random() * 5);
+var iD = 0;
+let ctext = ["", "", "", "", "", "", ""];
+let cright = ["1", "1", "1", "1", "1", "1", "1"];
+let cexist = [1, 1, 1, 1, 1, 1, 1];
+let cx = [10, cvs.width/9, 2*cvs.width/9, 3*cvs.width/9, 4*cvs.width/9, 5*cvs.width/9, 6*cvs.width/9  ];
+let cy = [150, 450, 250, 100, 350, 200, 300];
+var N = 7;
+var exist = 0;
+var caughtD = 0;
 
 function draw() {
 
     ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    if (isMobile) ctx.font = "40px comic"; else ctx.font = "24px comic";
-    if (komplekt == 19) ctx.strokeText("Ловите изделия для 19 к., пока не стемнело", 16, 16);
-    if (komplekt == 16) ctx.strokeText("Ловите изделия для 16 к., пока не стемнело", 16, 16);
-    ctx.font = "20px comic";
+    if (isMobile) ctx.font = "36px comic"; else ctx.font = "24px comic";
+    if (komplekt == 19) ctx.strokeText("Ловите изделия для 19 к., пока не стемнело", 16, 24);
+    if (komplekt == 16) ctx.strokeText("Ловите изделия для 16 к., пока не стемнело", 16, 24);
+    if (isMobile) ctx.font = "32px comic"; else ctx.font = "20px comic";
 
     // ящик
     ctx.drawImage(box, boxX, boxY);
-    ctx.strokeText(N-exist, boxX+108, boxY+150);
+    ctx.strokeText(caughtD + " из " + ND, boxX+80, boxY+150);
+
+   // счёт
+   if (result16 > 0) ctx.strokeText("Поставок по 16к.:" + result16, 10, cvs.height-40);
+   if (result19 > 0) ctx.strokeText("Поставок по 19к.:" + result19, 10, cvs.height-20);
 
     // сумерки
     if (red > 100) red -=0.3;
@@ -95,37 +103,52 @@ function draw() {
     {
        if (cexist[i] == 1)
        { 
-           // вывод
+           // вывод номенклатуры
            ctx.strokeText(ctext[i], cx[i], cy[i]);
            cy[i] ++;
            if (cy[i] > window.innerHeight) cy[i] = 32;
-
+           // проверка попадания
            if ((cx[i] > boxX - 112) && (cx[i] < boxX + 112) &&
                (cy[i] > boxY + 40) && (cy[i] < boxY + 60))
-           {
-                cexist[i] = 0;
-	        exist--;
-                red+=20; green+=20; blue+=20;
+           {   
+               caughtD++;
+               red+=20; green+=20; blue+=20;
+               if (iD < ND)  // добавляем из словаря, если в нем есть
+               {
+                 cexist[i] = 1; 
+                 ctext[i] = dictionary[iD];
+                 iD++;
+                 cy[i] += 180;
+               }
+               else
+               {
+                 cexist[i] = 0;
+	         exist--;
+               }
+               
            }
         }
     } 
+    // обновление комплекта
     if (exist == 0)
     {  
        exist = N;
+       ND = maxND; // - Math.floor(Math.random() * 5);
+       caughtD = 0;
+
+       if (komplekt==19) result19++; else result16++;
 
        komplekt = 35 - komplekt;
        for (var i=0; i < N; i++) 
        {
            cexist[i] = 1;
-           if ((cy[i] > boxY + 40) && (cy[i] < boxY + 60)) cy[i] -= 80;
+           cy[0] = 150; cy[1] = 450; cy[2] = 250; cy[3] = 100; cy[4] = 350; cy[5] = 200; cy[6] = 300;
+           if ((cy[i] > boxY + 40) && (cy[i] < boxY + 60)) cy[i] += 80;
+           ctext[i] = dictionary[i];
        } 
-
+       iD = N;
     }
  
-
-ctx.strokeText(red, 10, 50);
-ctx.strokeText(green, 10, 90);
-ctx.strokeText(blue, 10, 130);
 
     requestAnimationFrame(draw); // Вызов функции постоянно
 }
