@@ -59,18 +59,21 @@ document.addEventListener("keyup", function (e) {
 
 let dictionary = ["1 RT0402FRD0751RL", "2 NFE31PT222Z1E9", "3 NFM18CC222R1C3", "4 М2,5-6gx8.36.10.013", "5 RT0402FRE0722RL",
   "6 2,5-200 HV-A2", "7 М2,5х16-А2-70", "8 T491D107K020AT", "9 7.860.001-05", "10 T491X226K050AT", "11 GRM155C81C225KE11D", "12 GRM155C80J475MEAAJ", 
-   "13 М2,5x12-А2-70", "14 GRM31BR73A472KW01L", "15 GRM033R61A104ME84D", "16 RC0603FR-074K7L", "17 GRM1555C1H220JA01J"];
+   "13 М2,5x12-А2-70", "14 GRM31BR73A472KW01L", "12105C475KAT2A", "GRM033R61A104ME84D", "RC0603FR-074K7L"];
 var maxND = 17;
 var ND = maxND - Math.floor(Math.random() * 5);
 var iD = 0;
 let ctext = ["", "", "", "", "", "", ""];
-let cright = ["1", "1", "1", "1", "1", "1", "1"];
+//let cright = ["1", "1", "1", "1", "1", "1", "1"];
 let cexist = [1, 1, 1, 1, 1, 1, 1];
 let cx = [10, cvs.width/9, 2*cvs.width/9, 3*cvs.width/9, 4*cvs.width/9, 5*cvs.width/9, 6*cvs.width/9  ];
 let cy = [150, 450, 250, 100, 350, 200, 300];
 var N = 7;
 var exist = 0;
 var caughtD = 0;
+
+var alert12105C475KAT2A = 0;
+
 
 function draw() {
 
@@ -94,9 +97,17 @@ function draw() {
     if (red > 100) red -=0.3;
     if (green > 100) green -=0.3;
     if (blue > 120) blue -= 0.2;
-    if (blue < 160)
+    if (alert12105C475KAT2A == 1)
+    {
+        ctx.strokeText("Ошибка, AVX нет в составе", boxX-20, boxY+170);
+    }
+    else if (blue < 160)
     {
         ctx.strokeText("Стемнело, но можно продолжать", boxX-20, boxY+170);
+    }
+    else if ((red > 255) && (green > 255) && (blue > 255))
+    {
+        ctx.strokeText("Отлично, мы встретили рассвет", boxX-20, boxY+170);
     }
 
     for (var i=0; i < N; i++) 
@@ -113,6 +124,7 @@ function draw() {
            {   
                caughtD++;
                red+=20; green+=20; blue+=20;
+               if (ctext[i] == "12105C475KAT2A") { alert12105C475KAT2A = 1; caughtD--; ND--;}
                if (iD < ND)  // добавляем из словаря, если в нем есть
                {
                  cexist[i] = 1; 
@@ -133,7 +145,7 @@ function draw() {
     if (exist == 0)
     {  
        exist = N;
-       ND = maxND; // - Math.floor(Math.random() * 5);
+       ND = maxND - Math.floor(Math.random() * 5);
        caughtD = 0;
 
        if (komplekt==19) result19++; else result16++;
@@ -147,6 +159,8 @@ function draw() {
            ctext[i] = dictionary[i];
        } 
        iD = N;
+
+       alert12105C475KAT2A = 0;
     }
  
 
