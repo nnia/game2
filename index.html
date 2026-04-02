@@ -1,0 +1,35 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the capacitor!</title>
+    <style>
+        canvas {
+            border: 3px solid green;
+        }
+    </style>
+</head>
+<body>
+    <font color = #005500> Ловите конденсаторы Murata, пока не стемнело</font>
+    <br>
+    <canvas id="gameCanvas" width="1200" height="600"></canvas>
+    <script src="game2.js"></script>
+</body>
+
+				<div onmouseover="mOver(this)"
+			 	onmouseout="mOut(this)" align = "right"
+				style="height:10px; color:#696969">o*-*-*-*-*-*-*-*-*-*-*-*-*-*-*o</div>
+
+
+
+		<script>
+		function mOver(obj)
+		{
+		obj.innerHTML="0-*-*-*-*-*-*-*-*-*-*-0"
+		}
+
+		function mOut(obj)
+		{
+		obj.innerHTML="o*-*-*-*-*-*-*-*-*-*-*o"
+		}
+		</script>
+
