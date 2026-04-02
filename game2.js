@@ -2,20 +2,23 @@
 var cvs = document.getElementById("gameCanvas");
 
 var ctx = cvs.getContext("2d");
-cvs.width = window.innerWidth;
-cvs.height = window.innerHeight;
+cvs.width = window.innerWidth*0.98;
+cvs.height = window.innerHeight*0.975;
+
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 
 var box = new Image();
 box.src = "i1.png";
 
 var boxX = 100;
-var boxY = 100;
+var boxY = 300;
 var boxKey = ' ';
 
 var deltaBox = 8;
 
-var red = 240;
-var green = 240;
+var red = 220;
+var green = 220;
 var blue = 255;
 
 var komplekt = 19;
@@ -57,12 +60,12 @@ document.addEventListener("keyup", function (e) {
 
 });
 
-let ctext = ["GRM155C81C225KE11D", "TRS3122ERGET"];
-let cright = ["1", "0"];
-let cexist = [1, 1];
-let cx = [100, 300];
-let cy = [150, 50];
-var N = 2;
+let ctext = ["GRM155C81C225KE11D", "TRS3122ERGET", "М2,5x12-А2-70"];
+let cright = ["1", "1", "1"];
+let cexist = [1, 1, 1];
+let cx = [100, 300, 500];
+let cy = [150, 50, 250];
+var N = 3;
 var exist = N;
 
 function draw() {
@@ -70,21 +73,22 @@ function draw() {
     ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    ctx.font = "24px comic";
+    if (isMobile) ctx.font = "40px comic"; else ctx.font = "24px comic";
     if (komplekt == 19) ctx.strokeText("Ловите изделия для 19 к., пока не стемнело", 16, 16);
     if (komplekt == 16) ctx.strokeText("Ловите изделия для 16 к., пока не стемнело", 16, 16);
     ctx.font = "20px comic";
 
     // ящик
     ctx.drawImage(box, boxX, boxY);
+    ctx.strokeText(N-exist, boxX+108, boxY+150);
 
     // сумерки
-    if (red > 100) red -=0.1;
-    if (green > 100) green -=0.1;
-    if (blue > 100) blue -= 0.1;
+    if (red > 100) red -=0.3;
+    if (green > 100) green -=0.3;
+    if (blue > 120) blue -= 0.2;
     if (blue < 160)
     {
-        ctx.strokeText("Стемнело, но можно продолжать", boxX, boxY+110);
+        ctx.strokeText("Стемнело, но можно продолжать", boxX-20, boxY+170);
     }
 
     for (var i=0; i < N; i++) 
@@ -97,11 +101,11 @@ function draw() {
            if (cy[i] > window.innerHeight) cy[i] = 32;
 
            if ((cx[i] > boxX - 112) && (cx[i] < boxX + 112) &&
-               (cy[i] > boxY + 20) && (cy[i] < boxY + 40))
+               (cy[i] > boxY + 40) && (cy[i] < boxY + 60))
            {
                 cexist[i] = 0;
 	        exist--;
-                red+=10; green+=10; blue+=10;
+                red+=20; green+=20; blue+=20;
            }
         }
     } 
@@ -113,11 +117,16 @@ function draw() {
        for (var i=0; i < N; i++) 
        {
            cexist[i] = 1;
-           if ((cy[i] > boxY + 20) && (cy[i] < boxY + 40)) cy[i] -= 80;
+           if ((cy[i] > boxY + 40) && (cy[i] < boxY + 60)) cy[i] -= 80;
        } 
 
     }
  
+
+ctx.strokeText(red, 10, 50);
+ctx.strokeText(green, 10, 90);
+ctx.strokeText(blue, 10, 130);
+
     requestAnimationFrame(draw); // Вызов функции постоянно
 }
 
