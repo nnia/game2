@@ -80,10 +80,10 @@ function draw() {
     ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    if (isMobile) ctx.font = "36px comic"; else ctx.font = "24px comic";
+    if (isMobile) ctx.font = "36px arial"; else ctx.font = "24px arial";
     if (komplekt == 19) ctx.strokeText("Ловите изделия для 19 к., пока не стемнело", 16, 24);
     if (komplekt == 16) ctx.strokeText("Ловите изделия для 16 к., пока не стемнело", 16, 24);
-    if (isMobile) ctx.font = "32px comic"; else ctx.font = "20px comic";
+    if (isMobile) ctx.font = "32px arial"; else ctx.font = "20px arial";
 
     // ящик
     ctx.drawImage(box, boxX, boxY);
@@ -99,15 +99,15 @@ function draw() {
     if (blue > 120) blue -= 0.2;
     if (alert12105C475KAT2A == 1)
     {
-        ctx.strokeText("Ошибка, AVX нет в составе", boxX-20, boxY+170);
+        ctx.strokeText("AVX нет в составе, исключаем из перечня", boxX-20, boxY+190);
     }
     else if (blue < 160)
     {
-        ctx.strokeText("Стемнело, но можно продолжать", boxX-20, boxY+170);
+        ctx.strokeText("Стемнело, но можно продолжать", boxX-20, boxY+190);
     }
     else if ((red > 255) && (green > 255) && (blue > 255))
     {
-        ctx.strokeText("Отлично, мы встретили рассвет", boxX-20, boxY+170);
+        ctx.strokeText("Рассвело, но можно продолжать", boxX-20, boxY+190);
     }
 
     for (var i=0; i < N; i++) 
@@ -124,7 +124,7 @@ function draw() {
            {   
                caughtD++;
                red+=20; green+=20; blue+=20;
-               if (ctext[i] == "12105C475KAT2A") { alert12105C475KAT2A = 1; caughtD--; ND--;}
+               if (ctext[i] == "12105C475KAT2A") { alert12105C475KAT2A = 1; caughtD--; ND--;} else  alert12105C475KAT2A = 0;
                if (iD < ND)  // добавляем из словаря, если в нем есть
                {
                  cexist[i] = 1; 
@@ -160,7 +160,7 @@ function draw() {
        } 
        iD = N;
 
-       alert12105C475KAT2A = 0;
+       // alert12105C475KAT2A = 0;
     }
  
 
