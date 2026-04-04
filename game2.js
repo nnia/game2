@@ -58,21 +58,28 @@ document.addEventListener("keyup", function (e) {
 });
 
 let dictionary = ["RT0402FRD0751RL", "NFE31PT222Z1E9", "NFM18CC222R1C3", "М2,5-6gx8.36.10.013", "RT0402FRE0722RL",
-  "2,5-200 HV-A2", "М2,5х16-А2-70", "T491D107K020AT", "7.860.001-05", "T491X226K050AT", "GRM155C81C225KE11D", "GRM155C80J475MEAAJ", 
-   "М2,5x12-А2-70", "GRM31BR73A472KW01L", "12105C475KAT2A", "GRM033R61A104ME84D", "RC0603FR-074K7L"];
+  "2,5-200 HV-A2", "М2,5х16-А2-70", "T491D107K020AT", "7.860.001-05", "T491X226K050AT", 
+  "GRM155C81C225KE11D", "GRM155C80J475MEAAJ", "М2,5x12-А2-70", "GRM31BR73A472KW01L", "12105C475KAT2A", "GRM033R61A104ME84D", "RC0603FR-074K7L"];
+let dictionaryRight = [1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,0, 1,1];
+
 var maxND = 17;
 var ND = maxND - Math.floor(Math.random() * 5);
 var iD = 0;
 let ctext = ["", "", "", "", "", "", ""];
-//let cright = ["1", "1", "1", "1", "1", "1", "1"];
+let cright = [0,0,0,0,0, 0,0];
+
 let cexist = [1, 1, 1, 1, 1, 1, 1];
 let cx = [10, cvs.width/9, 2*cvs.width/9, 3*cvs.width/9, 4*cvs.width/9, 5*cvs.width/9, 6*cvs.width/9  ];
 let cy = [150, 450, 250, 100, 350, 200, 300];
+let cy_delta = [1,1,1,1,1,1,1];
 var N = 7;
 var exist = 0;
+var rightExist = 0;
 var caughtD = 0;
 
-var alert12105C475KAT2A = 0;
+var isAlert = 0;
+var textAlert = "";
+var youWin = 0;
 
 
 function draw() {
@@ -87,19 +94,23 @@ function draw() {
 
     // ящик
     ctx.drawImage(box, boxX, boxY);
-    ctx.strokeText(caughtD + " из " + ND, boxX+80, boxY+150);
+    ctx.strokeText(caughtD + " из " + ND, boxX+50, boxY+155);
 
    // счёт
-   if (result16 > 0) ctx.strokeText("Поставок по 16к.:" + result16, 10, cvs.height-40);
-   if (result19 > 0) ctx.strokeText("Поставок по 19к.:" + result19, 10, cvs.height-20);
+   if (result16 > 0) ctx.strokeText("Поставок по 16 к.: " + result16, 10, cvs.height-40);
+   if (result19 > 0) ctx.strokeText("Поставок по 19 к.: " + result19, 10, cvs.height-20);
 
     // сумерки
     if (red > 100) red -=0.3;
     if (green > 100) green -=0.3;
     if (blue > 120) blue -= 0.2;
-    if (alert12105C475KAT2A == 1)
+    if (isAlert == 1)
     {
-        ctx.strokeText("AVX нет в составе, исключаем из перечня", boxX-20, boxY+190);
+        ctx.strokeText(alertText, boxX-20, boxY+190);
+    }
+    else if (youWin == 1) 
+    {
+        ctx.strokeText(alertText, boxX-20, boxY+190);
     }
     else if (blue < 160)
     {
@@ -110,13 +121,18 @@ function draw() {
         ctx.strokeText("Рассвело, но можно продолжать", boxX-20, boxY+190);
     }
 
+
+    ctx.strokeText("На экране правильных: " + rightExist, 10, 50);
+
+
     for (var i=0; i < N; i++) 
     {
        if (cexist[i] == 1)
        { 
            // вывод номенклатуры
            ctx.strokeText(ctext[i], cx[i], cy[i]);
-           cy[i] ++;
+           cy[i] += cy_delta[i];
+           
            if (cy[i] > window.innerHeight) cy[i] = 32;
            // проверка попадания
            if ((cx[i] > boxX - 112) && (cx[i] < boxX + 112) &&
@@ -124,11 +140,25 @@ function draw() {
            {   
                caughtD++;
                red+=20; green+=20; blue+=20;
-               if (ctext[i] == "12105C475KAT2A") { alert12105C475KAT2A = 1; caughtD--; ND--;} else  alert12105C475KAT2A = 0;
-               if (iD < ND)  // добавляем из словаря, если в нем есть
+               // ошибочный
+               if (cright[i] == 0) 
+               {
+                   isAlert = 1; alertText = "Ошибка, " + ctext[i] + " нет в составе ";  ctx.strokeText(ctext[i], 20, 300);  caughtD--; ND--;
+               } 
+               else  
+               {  
+                   isAlert = 0;
+                   alertText = "";
+                   youWin = 0;
+                }
+
+               // добавляем номенклатуру из словаря, если в нем есть ещё что-то
+               if (iD < ND) 
                {
                  cexist[i] = 1; 
                  ctext[i] = dictionary[iD];
+                 cright[i] = dictionaryRight[iD];
+                 if (cright[i] == 0) rightExist--;
                  iD++;
                  cy[i] += 180;
                }
@@ -136,8 +166,21 @@ function draw() {
                {
                  cexist[i] = 0;
 	         exist--;
+                 if (cright[i] == 1) rightExist--;
                }
                
+
+              // проверяем выигрыш
+               if (rightExist == 0)
+               { 
+                     youWin = 1; 
+                     if (exist > 0) 
+                     {
+                        alertText = "Комплект собран, но верните на склад ";
+                        for (var j=0; j< N; j++) if ((cexist[j]==1) && (cright[j]==0)) alertText += (ctext[j] + " ");
+                     }
+                     else  alertText = "Комплект собран, приступаем к следующему";
+                }
            }
         }
     } 
@@ -145,18 +188,22 @@ function draw() {
     if (exist == 0)
     {  
        exist = N;
-       ND = maxND - Math.floor(Math.random() * 5);
+       ND = maxND ; //- Math.floor(Math.random() * 5);
        caughtD = 0;
+       rightExist=0;
 
        if (komplekt==19) result19++; else result16++;
 
        komplekt = 35 - komplekt;
+       cy[0] = 150; cy[1] = 450; cy[2] = 250; cy[3] = 100; cy[4] = 350; cy[5] = 200; cy[6] = 300;
        for (var i=0; i < N; i++) 
        {
            cexist[i] = 1;
-           cy[0] = 150; cy[1] = 450; cy[2] = 250; cy[3] = 100; cy[4] = 350; cy[5] = 200; cy[6] = 300;
+           cy_delta[i] = 0.5 + Math.random();    
            if ((cy[i] > boxY + 40) && (cy[i] < boxY + 60)) cy[i] += 80;
            ctext[i] = dictionary[i];
+           cright[i] = dictionaryRight[i];
+           if (cright[i] == 1) rightExist++;
        } 
        iD = N;
 
